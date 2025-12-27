@@ -35,10 +35,47 @@ def save_grades(grades, output_file):
     except Exception as e:
         print(f"保存文件失败: {e}")
 
+def load_students():
+    """
+    加载学生名单
+    """
+    try:
+        if os.path.exists('students.json'):
+            with open('students.json', 'r', encoding='utf-8') as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return []
+
+def find_student_in_list(filename, students):
+    """
+    在学生名单中查找匹配的学生
+    """
+    for student in students:
+        student_id = str(student.get('id', ''))
+        student_name = str(student.get('name', ''))
+        
+        # 优先匹配学号 (如果学号存在且在文件名中)
+        if student_id and student_id in filename:
+            return student
+        
+        # 其次匹配姓名 (如果姓名存在且在文件名中，且长度大于1以避免误判)
+        if student_name and len(student_name) > 1 and student_name in filename:
+            return student
+            
+    return None
+
 def main():
     print("作业批改助手")
     print("=" * 50)
     
+    # 加载学生名单
+    students = load_students()
+    if students:
+        print(f"已加载 {len(students)} 名学生信息用于匹配。")
+    else:
+        print("未找到 students.json，将只记录文件名和分数。")
+
     # 1. 输入文件夹名称
     folder_name = input("请输入要批改的作业文件夹名称 (位于 downloads 目录下): ").strip()
     if not folder_name:
@@ -101,11 +138,24 @@ def main():
             try:
                 score = score_input
                 
-                # 记录结果
-                grades.append({
-                    "filename": filename,
-                    "score": score
-                })
+                # 尝试匹配学生信息
+                matched_student = find_student_in_list(filename, students)
+                
+                if matched_student:
+                    # 如果匹配成功，基于学生信息构建记录
+                    record = matched_student.copy()
+                    record['score'] = score
+                    record['filename'] = filename # 保留文件名作为参考
+                    grades.append(record)
+                    print(f"  -> 已匹配学生: {matched_student.get('name')} ({matched_student.get('id')})")
+                else:
+                    # 无法匹配，按原格式记录
+                    grades.append({
+                        "filename": filename,
+                        "score": score
+                    })
+                    print("  -> 未匹配到学生信息，仅记录文件名。")
+                
                 break
             except Exception:
                 print("输入无效，请重新输入")

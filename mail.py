@@ -100,12 +100,12 @@ for i, email_id in enumerate(target_ids):
 
                 # 检查实验报告 (LAB)
                 # 1. 匹配 "第X次...实验" 格式 (允许中间有其他字符)
-                lab_match_1 = re.search(r'第\s*(\d+|[一二三四五六七八九十]+)\s*次.*?(?:实验|LAB)', text, re.IGNORECASE)
+                lab_match_1 = re.search(r'第\s*(\d+|[一二三四五六七八九十]+)\s*次.*?(?:实验|LAB|实践)', text, re.IGNORECASE)
                 if lab_match_1:
                     return f"LAB{to_arabic(lab_match_1.group(1))}"
                 
                 # 2. 匹配 "实验报告1", "LAB 1", "实验作业2", "实验4" 等 (数字在后)
-                lab_match_2 = re.search(r'(?:实验报告|实验作业|实践|LAB|实验)\D*(\d+|[一二三四五六七八九十]+)', text, re.IGNORECASE)
+                lab_match_2 = re.search(r'(?:实验报告|实验作业|实践|LAB|实验).*?(\d+|[一二三四五六七八九十]+)', text, re.IGNORECASE)
                 if lab_match_2 and is_valid_num(to_arabic(lab_match_2.group(1))):
                     return f"LAB{to_arabic(lab_match_2.group(1))}"
                 
@@ -116,7 +116,7 @@ for i, email_id in enumerate(target_ids):
                     return f"课堂作业{to_arabic(class_match_1.group(1))}"
 
                 # 2. 匹配 "课堂作业1", "作业 2" 等 (数字在后)
-                class_match_2 = re.search(r'(?:课堂作业|作业)\D*(\d+|[一二三四五六七八九十]+)', text, re.IGNORECASE)
+                class_match_2 = re.search(r'(?:课堂作业|作业).*?(\d+|[一二三四五六七八九十]+)', text, re.IGNORECASE)
                 if class_match_2 and is_valid_num(to_arabic(class_match_2.group(1))):
                     return f"课堂作业{to_arabic(class_match_2.group(1))}"
                 

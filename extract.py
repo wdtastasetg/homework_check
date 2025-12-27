@@ -13,8 +13,8 @@ def extract_students_from_excel(excel_file):
         list: 学生信息列表
     """
     try:
-        # 读取Excel文件
-        df = pd.read_excel(excel_file, sheet_name='RollBook (2)', header=None)
+        # 读取Excel文件 (默认读取第一个Sheet)
+        df = pd.read_excel(excel_file, header=None)
         
         students = []
         

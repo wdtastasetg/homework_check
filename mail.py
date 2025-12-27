@@ -105,7 +105,7 @@ for i, email_id in enumerate(target_ids):
                     return f"LAB{to_arabic(lab_match_1.group(1))}"
                 
                 # 2. 匹配 "实验报告1", "LAB 1", "实验作业2", "实验4" 等 (数字在后)
-                lab_match_2 = re.search(r'(?:实验报告|实验作业|LAB|实验)\D*(\d+|[一二三四五六七八九十]+)', text, re.IGNORECASE)
+                lab_match_2 = re.search(r'(?:实验报告|实验作业|实践|LAB|实验)\D*(\d+|[一二三四五六七八九十]+)', text, re.IGNORECASE)
                 if lab_match_2 and is_valid_num(to_arabic(lab_match_2.group(1))):
                     return f"LAB{to_arabic(lab_match_2.group(1))}"
                 

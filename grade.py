@@ -13,7 +13,16 @@ def open_file(filepath):
     elif platform.system() == 'Windows':    # Windows
         os.startfile(filepath)
     else:                                   # linux variants
-        subprocess.call(('xdg-open', filepath))
+        # 优先尝试使用 VS Code 的 code 命令打开 (适配远程开发环境)
+        try:
+            # 使用 code 命令打开文件
+            subprocess.call(('code', filepath))
+        except FileNotFoundError:
+            # 如果没有 code 命令，则尝试 xdg-open
+            try:
+                subprocess.call(('xdg-open', filepath))
+            except FileNotFoundError:
+                print(f"无法打开文件: {filepath} (未找到打开方式)")
 
 def save_grades(grades, output_file):
     """
@@ -56,12 +65,19 @@ def main():
     print("-" * 50)
     
     grades = []
+    word_hint_shown = False
     
     # 3. 循环批改
     for i, filename in enumerate(files):
         filepath = os.path.join(folder_path, filename)
         print(f"[{i+1}/{len(files)}] 正在打开: {filename}")
         
+        # 检查是否为 Word 文档并提示
+        if filename.lower().endswith(('.doc', '.docx')) and not word_hint_shown:
+            print("提示: VS Code 默认无法预览 Word 文档。")
+            print("      请在扩展商店搜索并安装 'Office Viewer' (cweijan.vscode-office) 插件以正常查看。")
+            word_hint_shown = True
+
         # 自动打开文件
         try:
             open_file(filepath)

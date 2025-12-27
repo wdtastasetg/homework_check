@@ -73,3 +73,16 @@ python3 main.py
     *   在终端输入分数后，程序会自动记录并打开下一个文件。
     *   支持跳过 (`s`) 和中途退出保存 (`q`)。
 *   **输出**: 生成 `文件夹名_grades.json` 成绩单。
+
+## 4. 常见问题与插件推荐
+
+### 无法在 VS Code 中预览 Word 文档 (.doc/.docx)
+VS Code 默认将 Word 文档视为文本文件打开，会导致乱码。为了在批改时正常预览 Word 文档，**强烈建议安装以下插件**：
+
+*   **Office Viewer** (插件ID: `cweijan.vscode-office`)
+    *   安装后，点击 `.docx` 或 `.doc` 文件即可在 VS Code 中直接预览内容。
+
+### 无法预览 PDF 文件
+如果 VS Code 无法预览 PDF，建议安装：
+*   **PDF Viewer** (插件ID: `tomoki1207.pdf`) 或类似插件。
+

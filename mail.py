@@ -223,6 +223,59 @@ for i, email_id in enumerate(target_ids):
                     
                     # 下载附件
                     filepath = os.path.join(target_dir, fileName)
+
+                    # --- 智能去重逻辑 (学号 > 姓名) ---
+                    # 定义提取信息的辅助函数
+                    def extract_student_info(text):
+                        # 1. 提取学号 (8位以上数字)
+                        id_match = re.search(r'\d{8,}', text)
+                        s_id = id_match.group(0) if id_match else None
+                        
+                        # 2. 提取姓名 (2-4个中文字符)
+                        # 先移除常见的干扰词
+                        clean_text = re.sub(r'实验|作业|报告|课堂|文档|提交|修改|版|第|次|LAB|Homework|[0-9a-zA-Z\._\-\(\)\s]', '', text, flags=re.IGNORECASE)
+                        name_match = re.search(r'[\u4e00-\u9fa5]{2,4}', clean_text)
+                        s_name = name_match.group(0) if name_match else None
+                        return s_id, s_name
+
+                    current_id, current_name = extract_student_info(fileName)
+                    
+                    is_duplicate = False
+                    if os.path.exists(target_dir):
+                        for existing_file in os.listdir(target_dir):
+                            # 忽略非文件
+                            if not os.path.isfile(os.path.join(target_dir, existing_file)):
+                                continue
+                                
+                            # 如果完全同名，肯定是重复
+                            if existing_file == fileName:
+                                is_duplicate = True
+                                print(f"    [跳过] 文件已存在: {fileName}")
+                                break
+                            
+                            ex_id, ex_name = extract_student_info(existing_file)
+                            
+                            # 规则1: 学号匹配 (最准确)
+                            if current_id and ex_id and current_id == ex_id:
+                                is_duplicate = True
+                                print(f"    [跳过] 已存在该学号({current_id})的较新版本: {existing_file}")
+                                break
+                            
+                            # 规则2: 姓名匹配 (作为兜底，但需防止同名不同人)
+                            # 只有当无法通过学号区分时(比如其中一个没写学号)，才使用姓名判断
+                            # 如果两人都有学号且不相等，则不是同一个人，即使姓名相同
+                            if current_name and ex_name and current_name == ex_name:
+                                if current_id and ex_id and current_id != ex_id:
+                                    continue # 同名不同人，不跳过
+                                
+                                is_duplicate = True
+                                print(f"    [跳过] 已存在该姓名({current_name})的较新版本: {existing_file}")
+                                break
+                    
+                    if is_duplicate:
+                        continue
+                    # ------------------------------------
+
                     try:
                         with open(filepath, "wb") as f:
                             f.write(part.get_payload(decode=True))

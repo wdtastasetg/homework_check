@@ -12,7 +12,7 @@ mail.login("您的QQ号@qq.com", "您的授权码")
 mail.select("inbox")
 
 # 1. 设定搜索日期范围
-start_date = datetime.date(2025, 12, 15) # 起始日期
+start_date = datetime.date(2025, 12, 28) # 起始日期
 end_date = None # 结束日期 (None 表示直到现在)
 # end_date = datetime.date(2025, 12, 25) # 如果要指定结束日期，取消注释并修改
 

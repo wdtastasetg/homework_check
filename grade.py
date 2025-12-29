@@ -76,17 +76,38 @@ def main():
     else:
         print("未找到 students.json，将只记录文件名和分数。")
 
-    # 1. 输入文件夹名称
-    folder_name = input("请输入要批改的作业文件夹名称 (位于 downloads 目录下): ").strip()
-    if not folder_name:
-        print("未输入文件夹名称，程序退出")
+    # 1. 获取downloads下的所有文件夹
+    downloads_path = "downloads"
+    if not os.path.exists(downloads_path):
+        print(f"错误：目录 '{downloads_path}' 不存在。")
+        return
+
+    subfolders = [f for f in os.listdir(downloads_path) if os.path.isdir(os.path.join(downloads_path, f))]
+    subfolders.sort()
+
+    if not subfolders:
+        print(f"'{downloads_path}' 下没有找到任何文件夹。")
+        return
+
+    print("请选择要批改的作业文件夹:")
+    for i, folder in enumerate(subfolders, 1):
+        print(f"{i}. {folder}")
+    
+    choice = input("请输入序号: ").strip()
+    
+    if not choice.isdigit():
+        print("输入无效，请输入数字。")
         return
     
-    folder_path = os.path.join("downloads", folder_name)
-    
-    if not os.path.exists(folder_path):
-        print(f"错误：文件夹 '{folder_path}' 不存在。")
+    idx = int(choice) - 1
+    if idx < 0 or idx >= len(subfolders):
+        print("输入的序号超出范围。")
         return
+        
+    folder_name = subfolders[idx]
+    print(f"已选择: {folder_name}")
+    
+    folder_path = os.path.join(downloads_path, folder_name)
     
     # 2. 获取文件列表
     files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]

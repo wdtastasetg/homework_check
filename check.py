@@ -124,20 +124,39 @@ def main():
     if not students:
         return
     
-    # 输入作业文件夹名称
-    folder_name = input("请输入作业文件夹名称: ").strip()
-    if not folder_name:
-        print("未输入文件夹名称，程序退出")
+    # 获取downloads下的所有文件夹
+    downloads_path = "downloads"
+    if not os.path.exists(downloads_path):
+        print(f"错误：目录 '{downloads_path}' 不存在。")
+        return
+
+    subfolders = [f for f in os.listdir(downloads_path) if os.path.isdir(os.path.join(downloads_path, f))]
+    subfolders.sort()
+
+    if not subfolders:
+        print(f"'{downloads_path}' 下没有找到任何文件夹。")
+        return
+
+    print("请选择作业文件夹:")
+    for i, folder in enumerate(subfolders, 1):
+        print(f"{i}. {folder}")
+    
+    choice = input("请输入序号: ").strip()
+    
+    if not choice.isdigit():
+        print("输入无效，请输入数字。")
         return
     
-    # 构造完整路径
-    folder_path = os.path.join("downloads", folder_name)
-
-    # 分析提交情况
-    # 检查文件夹是否存在
-    if not os.path.exists(folder_path):
-        print(f"错误：文件夹 '{folder_path}' 不存在。")
+    idx = int(choice) - 1
+    if idx < 0 or idx >= len(subfolders):
+        print("输入的序号超出范围。")
         return
+        
+    folder_name = subfolders[idx]
+    print(f"已选择: {folder_name}")
+    
+    # 构造完整路径
+    folder_path = os.path.join(downloads_path, folder_name)
 
     submitted, not_submitted = analyze_all_submissions(students, folder_path)
     

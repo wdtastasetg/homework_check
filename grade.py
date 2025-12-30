@@ -122,11 +122,30 @@ def main():
     print(f"共找到 {len(files)} 个文件，开始批改...")
     print("-" * 50)
     
+    # 尝试加载已有成绩
+    output_file = f"{folder_name}_grades.json"
     grades = []
+    graded_filenames = set()
+    
+    if os.path.exists(output_file):
+        try:
+            with open(output_file, 'r', encoding='utf-8') as f:
+                grades = json.load(f)
+                for record in grades:
+                    if 'filename' in record:
+                        graded_filenames.add(record['filename'])
+            print(f"已加载 {len(grades)} 条历史成绩，将跳过已评分文件。")
+        except Exception as e:
+            print(f"加载历史成绩失败: {e}")
+    
     word_hint_shown = False
     
     # 3. 循环批改
     for i, filename in enumerate(files):
+        if filename in graded_filenames:
+            print(f"[{i+1}/{len(files)}] {filename} (已评分) - 跳过")
+            continue
+
         filepath = os.path.join(folder_path, filename)
         print(f"[{i+1}/{len(files)}] 正在打开: {filename}")
         

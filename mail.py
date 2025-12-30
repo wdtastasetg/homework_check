@@ -12,7 +12,7 @@ mail.login("您的QQ号@qq.com", "您的授权码")
 mail.select("inbox")
 
 # 1. 设定搜索日期范围
-start_date = datetime.date(2025, 12, 28) # 起始日期
+start_date = datetime.date(2025, 12, 30) # 起始日期
 end_date = None # 结束日期 (None 表示直到现在)
 # end_date = datetime.date(2025, 12, 25) # 如果要指定结束日期，取消注释并修改
 
@@ -190,8 +190,8 @@ for i, email_id in enumerate(target_ids):
                              fileName = new_fileName
 
                     # --- 检查文件扩展名 ---
-                    # 只允许 pdf, doc, docx, jpg, png
-                    allowed_extensions = ('.pdf', '.doc', '.docx', '.jpg', '.png')
+                    # 只允许 pdf, doc, docx, jpg, png， txt
+                    allowed_extensions = ('.pdf', '.doc', '.docx', '.jpg', '.png', '.txt')
                     if not fileName.lower().endswith(allowed_extensions):
                         print(f"    [跳过] 不支持的文件格式: {fileName}")
                         continue

@@ -32,6 +32,22 @@ def save_grades(grades, output_file):
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(grades, f, ensure_ascii=False, indent=2)
         print(f"成绩已保存到: {output_file}")
+        
+        # 计算并显示平均分
+        total_score = 0
+        valid_count = 0
+        for record in grades:
+            try:
+                score_val = float(record.get('score', 0))
+                total_score += score_val
+                valid_count += 1
+            except (ValueError, TypeError):
+                pass
+                
+        if valid_count > 0:
+            average = total_score / valid_count
+            print(f"当前平均分: {average:.2f} (基于 {valid_count} 份有效成绩)")
+            
     except Exception as e:
         print(f"保存文件失败: {e}")
 
